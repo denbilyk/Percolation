@@ -1,0 +1,15 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Idea files #
+*.ipr
+*.iws
+*.iml
+out
+*/out/*
+target
+*/target/*

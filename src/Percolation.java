@@ -75,18 +75,6 @@ public class Percolation {
         //return uf.connected(idxTvp, idxBvp); //Will be affect not full bottom sites
     }
 
-    int[] getArray() {
-        return opened;
-    }
-
-    int getOpened() {
-        int count = 0;
-        for (int item : opened) {
-            if (item == 1) count++;
-        }
-        return count;
-    }
-
     private void checkInputs(int i, int j) {
         if (i <= 0 || j <= 0 || i > N || j > N) throw new IndexOutOfBoundsException();
     }

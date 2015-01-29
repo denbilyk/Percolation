@@ -13,25 +13,26 @@ public class PercolationTest {
     public void test() {
         int rowSize = 5;
         Percolation percolation = new Percolation(rowSize);
+        int valueC;
+        int valueR;
         while (!percolation.percolates()) {
-            int valueR = rnd.nextInt(rowSize) + 1;
-            int valueC = rnd.nextInt(rowSize) + 1;
+            do {
+                valueR = rnd.nextInt(rowSize) + 1;
+                valueC = rnd.nextInt(rowSize) + 1;
+            } while (percolation.isOpen(valueR, valueC));
             percolation.open(valueR, valueC);
-            //System.out.println("Row: " + valueR + "  ==  Col: " + valueC);
-            //print(percolation.getOpenedArray(), rowSize);
-            //System.out.println();
         }
 
         System.out.println("Results: ");
-        print(percolation.getOpenedArray(), rowSize);
+        print(percolation.getArray(), rowSize);
         System.out.println();
         System.out.println("Count: " + percolation.getOpened());
-        System.out.println("Thresholds: " + (double)percolation.getOpened()/(rowSize * rowSize));
+        System.out.println("Thresholds: " + (double) percolation.getOpened() / (rowSize * rowSize));
 
     }
 
 
-    private void print(byte[] array, int rowSize) {
+    private void print(int[] array, int rowSize) {
         for (int j = 1; j <= rowSize; j++) {
             for (int i = 1; i <= rowSize; i++) {
                 System.out.print(array[rowSize * (j - 1) + (i - 1)]);

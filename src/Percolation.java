@@ -2,85 +2,81 @@
  * @author denis.bilyk
  */
 public class Percolation {
-    private final byte[] opened;
     private final WeightedQuickUnionUF uf;
-    private final int elementsInRow;
-    private final int lastIndex;
+    private final int elementsInSide;
+    private final int[] opened;     // array to store opened sites
+    private final int idxBvp;       // index bottom virtual point
+    private final int idxTvp;       // index top virtual point
 
     public Percolation(int N) {
         if (N <= 0) throw new IllegalArgumentException("N is below zero!");
-        elementsInRow = N;
+        elementsInSide = N;
         int elementsAmount = N * N + 2;
-        lastIndex = elementsAmount - 1;
+        idxBvp = elementsAmount - 1;
         uf = new WeightedQuickUnionUF(elementsAmount);
-        opened = new byte[elementsAmount];
-        init(elementsAmount);
-        createVirtualPoints(0, lastIndex);
+        idxTvp = idxBvp - 1;
+        opened = new int[elementsAmount - 2];
     }
 
     public void open(int i, int j) {
         if (i <= 0 || j <= 0) throw new IndexOutOfBoundsException();
-        if (!isOpen(i, j)) {
-            int id = getArrayId(i, j);
-            opened[id] = 1;
-            if (i - 1 > 0 && isOpen(i - 1, j)) {
-                uf.union(id, getArrayId(i - 1, j));
-            }
-            if (i + 1 < elementsInRow && isOpen(i + 1, j)) {
-                uf.union(id, getArrayId(i + 1, j));
-            }
-            if (j - 1 > 0 && isOpen(i, j - 1)) {
-                uf.union(id, getArrayId(i, j - 1));
-            }
-            if (j + 1 < elementsInRow && isOpen(i, j + 1)) {
-                uf.union(id, getArrayId(i, j + 1));
-            }
+        if (isOpen(i, j)) return;
+        int id = getArrayId(i, j);
+        opened[id] = 1;
+
+        // connect with directions
+        // top
+        if (i - 1 > 0 && isOpen(i - 1, j)) {
+            uf.union(getArrayId(i - 1, j), id);
         }
+        //bottom
+        if (i + 1 <= elementsInSide && isOpen(i + 1, j)) {
+            uf.union(getArrayId(i + 1, j), id);
+        }
+        // left
+        if (j - 1 > 0 && isOpen(i, j - 1)) {
+            uf.union(getArrayId(i, j - 1), id);
+        }
+        //right
+        if (j + 1 <= elementsInSide && isOpen(i, j + 1)) {
+            uf.union(getArrayId(i, j + 1), id);
+        }
+        //connect with virtual site
+        // top
+        if (i == 1) uf.union(id, idxTvp);
 
+        //bottom
+        if (i == elementsInSide) uf.union(id, idxBvp);
     }
-
 
     int getOpened() {
-        int counter = 0;
-        for (byte b : opened) {
-            if (b == 1) counter++;
+        int count = 0;
+        for (int item : opened) {
+            if (item == 1) count++;
         }
-        return counter;
+        return count;
     }
 
-    // open site (row i, column j) if it is not open already
-    public boolean isOpen(int i, int j) {
-        return opened[(i - 1) * elementsInRow + (j - 1)] == 1;
-    }
-
-    public boolean isFull(int i, int j) {
-        return false;
-        // is site (row i, column j) full?
-    }
-
-    public boolean percolates() {
-        return uf.find(lastIndex) == uf.find(0);
-    }
-
-    byte[] getOpenedArray() {
+    int[] getArray() {
         return opened;
     }
 
+    public boolean isOpen(int i, int j) {
+        int id = getArrayId(i, j);
+        return opened[id] == 1;
+    }
+
+    public boolean isFull(int i, int j) {
+        int id = getArrayId(i, j);
+        return uf.connected(idxTvp, id);
+
+    }
+
+    public boolean percolates() {
+        return uf.connected(idxTvp, idxBvp);
+    }
+
     private int getArrayId(int i, int j) {
-        return (i - 1) * elementsInRow + (j - 1) + 1;
+        return (i - 1) * elementsInSide + j - 1;  //first index i,j = {1,1}. i - row, j - column.
     }
-
-    private void createVirtualPoints(int topPoint, int bottomPoint) {
-        for (int i = 0, j = bottomPoint - 1; i < elementsInRow; i++, j--) {
-            uf.union(topPoint, i + 1);
-            uf.union(bottomPoint, j);
-        }
-    }
-
-    private void init(int number) {
-        for (int i = 0; i < number; i++) {
-            opened[i] = 0;
-        }
-    }
-
 }

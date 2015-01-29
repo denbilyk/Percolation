@@ -24,10 +24,10 @@ public class PercolationTest {
         }
 
         System.out.println("Results: ");
-        print(percolation.getArray(), rowSize);
+       // print(percolation.getArray(), rowSize);
         System.out.println();
-        System.out.println("Count: " + percolation.getOpened());
-        System.out.println("Thresholds: " + (double) percolation.getOpened() / (rowSize * rowSize));
+       // System.out.println("Count: " + percolation.getOpened());
+       // System.out.println("Thresholds: " + (double) percolation.getOpened() / (rowSize * rowSize));
 
     }
 
